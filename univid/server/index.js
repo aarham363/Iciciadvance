@@ -187,6 +187,16 @@ app.delete('/api/posts/:id', authRequired, async (req, res) => {
   res.json({ ok: true });
 });
 
+// Serve built client if present (so you can open one URL)
+const clientDist = path.join(__dirname, '..', 'client', 'dist');
+app.use(express.static(clientDist));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  res.sendFile(path.join(clientDist, 'index.html'), (err) => {
+    if (err) next();
+  });
+});
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`univid server running on http://localhost:${PORT}`);
